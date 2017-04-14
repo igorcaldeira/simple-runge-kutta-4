@@ -1,0 +1,113 @@
+<!doctype html>
+<html ng-app="rkApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	<style>
+		body{
+			padding: 20px;
+		}
+	</style>
+  </head>
+  <body>
+    <h2>Fourth Order Runge-Kutta</h2><br>
+    <div ng-controller="TodoListController as rk" ng-init="rk.start()">
+		<table class="table table-striped">
+		  <thead>
+		    <tr>
+		      <th>#</th>
+		      <th>Xn</th>
+		      <th>Yn</th>
+		      <th>Yn + 1</th>
+		      <th>K's</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr ng-repeat="iteration in rk.table">
+		      <th scope="row">{{$index + 1}}</th>
+		      <td>{{iteration.xn}}</td>
+		      <td>{{iteration.yn}}</td>
+		      <td><b>{{iteration.ynPlusOne}}</b></td>
+		      <td><span ng-repeat="k in iteration.kList">{{k}},&nbsp;&nbsp;</span></td>
+		    </tr>
+		  </tbody>
+		</table>
+    </div>
+  </body>
+</html>
+
+<script type="text/javascript">
+
+angular.module('rkApp', [])
+ .controller('TodoListController', ['$scope', function($scope) {
+    var rk = this;
+
+    rk.table = [];
+
+    rk.equation = function(x, y){
+    	var eqTotal = 2 + y - x;
+    	return eqTotal;
+    }
+
+    // Kx definitions
+
+    rk.kOne = function(xn, yn){
+    	return rk.equation(xn, yn);
+    };
+
+    rk.kTwo = function(xn, yn, h, kOne){
+    	var xnResult = xn + (h/2);
+    	var ynResult = yn + ((h/2) * kOne);
+    	return rk.equation(xnResult, ynResult);
+    };
+
+    rk.kThree = function(xn, yn, h, kTwo){
+    	var xnResult = xn + (h/2);
+    	var ynResult = yn + ((h/2) * kTwo);
+    	return rk.equation(xnResult, ynResult);
+    };
+
+    rk.kFour = function(xn, yn, h, kThree){
+    	var xnResult = xn + h;
+    	var ynResult = yn + h * kThree;
+    	return rk.equation(xnResult, ynResult);
+    };
+
+    // Y definition
+
+    rk.yIteration = function(xvalue, yvalue, pass, iterationNumber){
+
+    	var kone = rk.kOne(xvalue, yvalue);
+    	var ktwo = rk.kTwo(xvalue, yvalue, pass, kone);
+    	var kthree = rk.kThree(xvalue, yvalue, pass, ktwo);
+    	var kfour = rk.kFour(xvalue, yvalue, pass, kthree);
+
+    	var resKpart = (kone + (2 * ktwo) + (2 * kthree) + kthree);
+    	var res = yvalue + ((pass / 6) * resKpart);
+
+    	var kList = {kone: kone, ktwo: ktwo, kthree: kthree, kfour:kfour};
+
+    	rk.table.push({xn: xvalue, yn: yvalue, ynPlusOne: res, kList: kList});
+    };
+
+    // principal function
+    rk.start = function(){
+
+    	rk.table = [];
+    	var loops = 4;
+    	var h = 0.1;
+
+    	for (var i = 0; i < loops; i++) {
+
+    		if(i == 0)
+    			rk.yIteration(0, 2, h, i+1);
+    		else
+    			rk.yIteration(rk.table[i-1].xn + h, rk.table[i-1].ynPlusOne, h, i+1);
+    	}
+
+    };
+
+  }]);
+
+</script>
