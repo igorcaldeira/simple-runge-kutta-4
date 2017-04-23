@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="rkApp">
+<html ng-app="rkApp"  ng-controller="TodoListController">
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
@@ -11,8 +11,14 @@
 	</style>
   </head>
   <body>
-    <h2>Fourth Order Runge-Kutta</h2><br>
-    <div ng-controller="TodoListController as rk" ng-init="rk.start()">
+    <h2>Fourth Order Runge-Kutta</h2>
+    <br>
+    <input type="text" name="equation" ng-model="equation">
+    <input type="text" name="loops" ng-model="loops">
+    <input type="text" name="stepsize" ng-model="stepsize">
+    <input type="button" value="start" name="start" ng-click="start()">
+    <br><br>
+    <div>
 		<table class="table table-striped">
 		  <thead>
 		    <tr>
@@ -24,7 +30,7 @@
 		    </tr>
 		  </thead>
 		  <tbody>
-		    <tr ng-repeat="iteration in rk.table">
+		    <tr ng-repeat="iteration in table">
 		      <th scope="row">{{$index + 1}}</th>
 		      <td>{{iteration.xn}}</td>
 		      <td>{{iteration.yn}}</td>
@@ -39,71 +45,76 @@
 
 <script type="text/javascript">
 
-angular.module('rkApp', [])
- .controller('TodoListController', ['$scope', function($scope) {
-    var rk = this;
+var app = angular.module('rkApp', []);
 
-    rk.table = [];
+app.controller('TodoListController', ['$scope', function($scope) {
 
-    rk.equation = function(x, y){
-    	var eqTotal = 2 + y - x;
+    $scope.table = [];
+
+    $scope.equation = "2 + y - x";
+    $scope.loops = 4;
+    $scope.stepsize = 0.1;
+
+    $scope.runEquation = function(x, y){
+        x = parseFloat(x);
+        y = parseFloat(y);
+
+    	var eqTotal = eval($scope.equation);
     	return eqTotal;
     }
 
     // Kx definitions
 
-    rk.kOne = function(xn, yn){
-    	return rk.equation(xn, yn);
+    $scope.kOne = function(xn, yn){
+    	return $scope.runEquation(xn, yn);
     };
 
-    rk.kTwo = function(xn, yn, h, kOne){
+    $scope.kTwo = function(xn, yn, h, kOne){
     	var xnResult = xn + (h/2);
     	var ynResult = yn + ((h/2) * kOne);
-    	return rk.equation(xnResult, ynResult);
+    	return $scope.runEquation(xnResult, ynResult);
     };
 
-    rk.kThree = function(xn, yn, h, kTwo){
+    $scope.kThree = function(xn, yn, h, kTwo){
     	var xnResult = xn + (h/2);
     	var ynResult = yn + ((h/2) * kTwo);
-    	return rk.equation(xnResult, ynResult);
+    	return $scope.runEquation(xnResult, ynResult);
     };
 
-    rk.kFour = function(xn, yn, h, kThree){
+    $scope.kFour = function(xn, yn, h, kThree){
     	var xnResult = xn + h;
     	var ynResult = yn + h * kThree;
-    	return rk.equation(xnResult, ynResult);
+    	return $scope.runEquation(xnResult, ynResult);
     };
 
     // Y definition
 
-    rk.yIteration = function(xvalue, yvalue, pass, iterationNumber){
+    $scope.yIteration = function(xvalue, yvalue, pass, iterationNumber){
 
-    	var kone = rk.kOne(xvalue, yvalue);
-    	var ktwo = rk.kTwo(xvalue, yvalue, pass, kone);
-    	var kthree = rk.kThree(xvalue, yvalue, pass, ktwo);
-    	var kfour = rk.kFour(xvalue, yvalue, pass, kthree);
+    	var kone = $scope.kOne(xvalue, yvalue);
+    	var ktwo = $scope.kTwo(xvalue, yvalue, pass, kone);
+    	var kthree = $scope.kThree(xvalue, yvalue, pass, ktwo);
+    	var kfour = $scope.kFour(xvalue, yvalue, pass, kthree);
 
     	var resKpart = (kone + (2 * ktwo) + (2 * kthree) + kthree);
     	var res = yvalue + ((pass / 6) * resKpart);
 
     	var kList = {kone: kone, ktwo: ktwo, kthree: kthree, kfour:kfour};
 
-    	rk.table.push({xn: xvalue, yn: yvalue, ynPlusOne: res, kList: kList});
+    	$scope.table.push({xn: xvalue, yn: yvalue, ynPlusOne: res, kList: kList});
     };
 
     // principal function
-    rk.start = function(){
+    $scope.start = function(){
 
-    	rk.table = [];
-    	var loops = 4;
-    	var h = 0.1;
+    	$scope.table = [];
 
-    	for (var i = 0; i < loops; i++) {
+    	for (var i = 0; i < $scope.loops; i++) {
 
     		if(i == 0)
-    			rk.yIteration(0, 2, h, i+1);
+    			$scope.yIteration(0, 2, parseFloat($scope.stepsize), parseInt(i)+1);
     		else
-    			rk.yIteration(rk.table[i-1].xn + h, rk.table[i-1].ynPlusOne, h, i+1);
+    			$scope.yIteration($scope.table[i-1].xn + parseFloat($scope.stepsize), $scope.table[i-1].ynPlusOne, $scope.stepsize, parseInt(i)+1);
     	}
 
     };
