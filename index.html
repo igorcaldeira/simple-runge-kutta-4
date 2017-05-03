@@ -8,15 +8,55 @@
 		body{
 			padding: 20px;
 		}
+        button, input, select, textarea {
+            margin-bottom: 15px;
+        }
+        .form-inline label {
+            width: 50px;
+            margin-bottom: 20px;
+        }
 	</style>
   </head>
   <body>
     <h2>Fourth Order Runge-Kutta</h2>
     <br>
-    <input type="text" name="equation" ng-model="equation">
-    <input type="text" name="loops" ng-model="loops">
-    <input type="text" name="stepsize" ng-model="stepsize">
-    <input type="button" value="start" name="start" ng-click="start()">
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="equation" class="col-sm-2 control-label">Equation</label>
+            <div class="col-sm-4">
+                <input type="text" name="equation" ng-model="equation">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="loops" class="col-sm-2 control-label">loops</label>
+            <div class="col-sm-3">
+                <input type="text" name="loops" ng-model="loops">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="stepsize" class="col-sm-2 control-label">stepsize</label>
+            <div class="col-sm-3">
+                <input type="text" name="stepsize" ng-model="stepsize">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="xstart" class="col-sm-2 control-label">xstart</label>
+            <div class="col-sm-3">
+                <input type="text" name="xstart" ng-model="xstart">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="ystart" class="col-sm-2 control-label">ystart</label>
+            <div class="col-sm-3">
+                <input type="text" name="ystart" ng-model="ystart">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" class="btn btn-default" value="start" name="start" ng-click="start()">
+            </div>
+        </div>
+    </form>
     <br><br>
     <div>
 		<table class="table table-striped">
@@ -54,6 +94,8 @@ app.controller('TodoListController', ['$scope', function($scope) {
     $scope.equation = "2 + y - x";
     $scope.loops = 4;
     $scope.stepsize = 0.1;
+    $scope.xstart = 0;
+    $scope.ystart = 2;
 
     $scope.runEquation = function(x, y){
         x = parseFloat(x);
@@ -112,7 +154,7 @@ app.controller('TodoListController', ['$scope', function($scope) {
     	for (var i = 0; i < $scope.loops; i++) {
 
     		if(i == 0)
-    			$scope.yIteration(0, 2, parseFloat($scope.stepsize), parseInt(i)+1);
+    			$scope.yIteration($scope.xstart, $scope.ystart, parseFloat($scope.stepsize), parseInt(i)+1);
     		else
     			$scope.yIteration($scope.table[i-1].xn + parseFloat($scope.stepsize), $scope.table[i-1].ynPlusOne, $scope.stepsize, parseInt(i)+1);
     	}
