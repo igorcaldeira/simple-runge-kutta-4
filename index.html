@@ -30,25 +30,25 @@
         <div class="form-group">
             <label for="loops" class="col-sm-2 control-label">loops</label>
             <div class="col-sm-3">
-                <input type="text" name="loops" ng-model="loops">
+                <input type="number" name="loops" ng-model="loops">
             </div>
         </div>
         <div class="form-group">
             <label for="stepsize" class="col-sm-2 control-label">stepsize</label>
             <div class="col-sm-3">
-                <input type="text" name="stepsize" ng-model="stepsize">
+                <input type="number" name="stepsize" ng-model="stepsize">
             </div>
         </div>
         <div class="form-group">
             <label for="xstart" class="col-sm-2 control-label">xstart</label>
             <div class="col-sm-3">
-                <input type="text" name="xstart" ng-model="xstart">
+                <input type="number" name="xstart" ng-model="xstart">
             </div>
         </div>
         <div class="form-group">
             <label for="ystart" class="col-sm-2 control-label">ystart</label>
             <div class="col-sm-3">
-                <input type="text" name="ystart" ng-model="ystart">
+                <input type="number" name="ystart" ng-model="ystart">
             </div>
         </div>
         <div class="form-group">
@@ -125,20 +125,20 @@ app.controller('TodoListController', ['$scope', function($scope) {
 
     $scope.kFour = function(xn, yn, h, kThree){
     	var xnResult = xn + h;
-    	var ynResult = yn + h * kThree;
+    	var ynResult = yn + (h * kThree);
     	return $scope.runEquation(xnResult, ynResult);
     };
 
     // Y definition
 
-    $scope.yIteration = function(xvalue, yvalue, pass, iterationNumber){
+    $scope.yIteration = function(xvalue, yvalue, pass){
 
     	var kone = $scope.kOne(xvalue, yvalue);
     	var ktwo = $scope.kTwo(xvalue, yvalue, pass, kone);
     	var kthree = $scope.kThree(xvalue, yvalue, pass, ktwo);
     	var kfour = $scope.kFour(xvalue, yvalue, pass, kthree);
 
-    	var resKpart = (kone + (2 * ktwo) + (2 * kthree) + kthree);
+    	var resKpart = (kone + (2 * ktwo) + (2 * kthree) + kfour);
     	var res = yvalue + ((pass / 6) * resKpart);
 
     	var kList = {kone: kone, ktwo: ktwo, kthree: kthree, kfour:kfour};
@@ -154,9 +154,9 @@ app.controller('TodoListController', ['$scope', function($scope) {
     	for (var i = 0; i < $scope.loops; i++) {
 
     		if(i == 0)
-    			$scope.yIteration($scope.xstart, $scope.ystart, parseFloat($scope.stepsize), parseInt(i)+1);
+    			$scope.yIteration(parseFloat($scope.xstart), parseFloat($scope.ystart), parseFloat($scope.stepsize), parseInt(i)+1);
     		else
-    			$scope.yIteration($scope.table[i-1].xn + parseFloat($scope.stepsize), $scope.table[i-1].ynPlusOne, $scope.stepsize, parseInt(i)+1);
+    			$scope.yIteration(parseFloat($scope.table[i-1].xn) + parseFloat($scope.stepsize), parseFloat($scope.table[i-1].ynPlusOne), parseFloat($scope.stepsize));
     	}
 
     };
