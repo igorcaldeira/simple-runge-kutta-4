@@ -4,9 +4,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    
     <script src="math.min.js"></script>
-
+    <script src="script.js"></script>
 	<style>
 		body{
 			padding: 20px;
@@ -79,89 +78,3 @@
     </div>
   </body>
 </html>
-
-<script type="text/javascript">
-
-var app = angular.module('rkApp', []);
-
-app.controller('TodoListController', ['$scope', function($scope) {
-
-    $scope.table = [];
-
-    $scope.equation = "2 + y - x";
-    $scope.loops = 4;
-    $scope.stepsize = 0.1;
-    $scope.xstart = 0;
-    $scope.ystart = 2;
-
-    $scope.runEquation = function(x, y){
-        var varScope = {
-            x: parseFloat(x),
-            y: parseFloat(y),
-        }
-
-    	var eqTotal = math.eval($scope.equation, varScope);
-    	return eqTotal;
-    }
-
-    // Kx definitions
-
-    $scope.kOne = function(xn, yn){
-    	return $scope.runEquation(xn, yn);
-    };
-
-    $scope.kTwo = function(xn, yn, h, kOne){
-    	var xnResult = xn + (h/2);
-    	var ynResult = yn + ((h/2) * kOne);
-    	return $scope.runEquation(xnResult, ynResult);
-    };
-
-    $scope.kThree = function(xn, yn, h, kTwo){
-    	var xnResult = xn + (h/2);
-    	var ynResult = yn + ((h/2) * kTwo);
-    	return $scope.runEquation(xnResult, ynResult);
-    };
-
-    $scope.kFour = function(xn, yn, h, kThree){
-    	var xnResult = xn + h;
-    	var ynResult = yn + (h * kThree);
-    	return $scope.runEquation(xnResult, ynResult);
-    };
-
-    // Y definition
-
-    $scope.yIteration = function(xvalue, yvalue, pass){
-
-    	var kone = $scope.kOne(xvalue, yvalue);
-    	var ktwo = $scope.kTwo(xvalue, yvalue, pass, kone);
-    	var kthree = $scope.kThree(xvalue, yvalue, pass, ktwo);
-    	var kfour = $scope.kFour(xvalue, yvalue, pass, kthree);
-
-    	var resKpart = (kone + (2 * ktwo) + (2 * kthree) + kfour);
-    	var res = yvalue + ((pass / 6) * resKpart);
-
-    	var kList = {kone: kone, ktwo: ktwo, kthree: kthree, kfour:kfour};
-
-    	$scope.table.push({xn: xvalue, yn: yvalue, ynPlusOne: res, kList: kList});
-    };
-
-    // principal function
-    $scope.start = function(){
-
-    	$scope.table = [];
-
-        var iterations = ($scope.ystart - $scope.xstart) / $scope.stepsize;
-
-    	for (var i = 0; i < iterations; i++) {
-
-    		if(i == 0)
-    			$scope.yIteration(parseFloat($scope.xstart), parseFloat($scope.ystart), parseFloat($scope.stepsize), parseInt(i)+1);
-    		else
-    			$scope.yIteration(parseFloat($scope.table[i-1].xn) + parseFloat($scope.stepsize), parseFloat($scope.table[i-1].ynPlusOne), parseFloat($scope.stepsize));
-    	}
-
-    };
-
-  }]);
-
-</script>
