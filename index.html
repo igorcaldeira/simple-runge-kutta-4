@@ -4,6 +4,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" 
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    
+    <script src="math.min.js"></script>
+
 	<style>
 		body{
 			padding: 20px;
@@ -28,27 +31,21 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="loops" class="col-sm-2 control-label">loops</label>
-            <div class="col-sm-3">
-                <input type="number" name="loops" ng-model="loops">
-            </div>
-        </div>
-        <div class="form-group">
             <label for="stepsize" class="col-sm-2 control-label">stepsize</label>
             <div class="col-sm-3">
-                <input type="number" name="stepsize" ng-model="stepsize">
+                <input type="number" name="stepsize" step="0.1" ng-model="stepsize">
             </div>
         </div>
         <div class="form-group">
             <label for="xstart" class="col-sm-2 control-label">xstart</label>
             <div class="col-sm-3">
-                <input type="number" name="xstart" ng-model="xstart">
+                <input type="number" name="xstart" step="0.1" ng-model="xstart">
             </div>
         </div>
         <div class="form-group">
             <label for="ystart" class="col-sm-2 control-label">ystart</label>
             <div class="col-sm-3">
-                <input type="number" name="ystart" ng-model="ystart">
+                <input type="number" name="ystart" step="0.1" ng-model="ystart">
             </div>
         </div>
         <div class="form-group">
@@ -98,10 +95,12 @@ app.controller('TodoListController', ['$scope', function($scope) {
     $scope.ystart = 2;
 
     $scope.runEquation = function(x, y){
-        x = parseFloat(x);
-        y = parseFloat(y);
+        var varScope = {
+            x: parseFloat(x),
+            y: parseFloat(y),
+        }
 
-    	var eqTotal = eval($scope.equation);
+    	var eqTotal = math.eval($scope.equation, varScope);
     	return eqTotal;
     }
 
@@ -151,7 +150,9 @@ app.controller('TodoListController', ['$scope', function($scope) {
 
     	$scope.table = [];
 
-    	for (var i = 0; i < $scope.loops; i++) {
+        var iterations = ($scope.ystart - $scope.xstart) / $scope.stepsize;
+
+    	for (var i = 0; i < iterations; i++) {
 
     		if(i == 0)
     			$scope.yIteration(parseFloat($scope.xstart), parseFloat($scope.ystart), parseFloat($scope.stepsize), parseInt(i)+1);
