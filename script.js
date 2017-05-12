@@ -9,7 +9,7 @@ app.controller('TodoListController', ['$scope', function($scope) {
 
     $scope.equation = "2 + y - x";
     $scope.loops = 4;
-    $scope.stepsize = 0.1;
+    $scope.stepsize = 0.0001;
     $scope.xstart = 0;
     $scope.ystart = 2;
 
@@ -72,7 +72,7 @@ app.controller('TodoListController', ['$scope', function($scope) {
 
         $scope.table = [];
 
-        var iterations = ($scope.ystart - $scope.xstart) / $scope.stepsize;
+        var iterations = ($scope.ystart - $scope.xstart) /  parseFloat($scope.stepsize);
 
         for (var i = 0; i < iterations; i++) {
 
